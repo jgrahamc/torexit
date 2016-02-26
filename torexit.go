@@ -77,21 +77,29 @@ func main() {
 		return
 	}
 
-	size := image.Rect(0, 0, len(files), len(seen))
+	width := len(seen) * 2
+	height := len(files)
+	size := image.Rect(0, 0, width, height)
 	rect := image.NewRGBA(size)
 
-	for x := 0; x < len(files); x++ {
-		for y := 0; y < len(seen); y++ {
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
 			rect.Set(x, y, color.RGBA{255, 255, 255, 255})
 		}
 	}
 
-	row := 0
-	for _, xs := range seen {
-		for _, x := range xs {
-			rect.Set(x, row, color.RGBA{0, 0, 255, 255})
+	colors := [...]color.RGBA{color.RGBA{0, 0, 255, 255},
+		color.RGBA{255, 0, 0, 255},
+	}
+
+	col := 0
+	for _, ys := range seen {
+		c := colors[(col/2)%len(colors)]
+		for _, y := range ys {
+			rect.Set(col, y, c)
+			rect.Set(col+1, y, c)
 		}
-		row += 1
+		col += 2
 	}
 
 	f, err := os.Create(*out)
